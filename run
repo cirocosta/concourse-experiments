@@ -22,7 +22,7 @@ main () {
   local pipeline_name=$(basename $pipeline_path | cut -d'.' -f 1)
 
   login
-  send_pipeline $pipeline_name $pipelinne_path
+  send_pipeline $pipeline_name $pipeline_path
   unpause_pipeline $pipeline_name
 
   echo "Done!"
@@ -53,7 +53,7 @@ send_pipeline () {
 }
 
 
-unpausing_pipeline () {
+unpause_pipeline () {
   local pipeline_name=$1
 
   echo "Unpausing Pipeline $pipeline_name"

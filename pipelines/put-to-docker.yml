@@ -1,0 +1,43 @@
+---
+resources:
+  - name: 'repository'
+    type: 'git' 
+    source:
+      uri: 'https://github.com/cirocosta/concourse-experiments.git'
+
+  - name: 'image'
+    type: 'docker-image' 
+    source:
+      repository: '192.168.109.54:5000/test/static'
+      insecure_registries: ['192.168.109.54:5000']
+
+jobs:
+  - name: "build"
+    plan:
+      - get: 'repository'
+        trigger: true
+
+      - task: 'hue'
+        config: 
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: 
+              repository: 'alpine-bash'
+              insecure_registries: ['192.168.109.54:5000']
+              save: true
+          inputs:
+            - name: 'repository'
+          outputs:
+            - name: 'result'
+          run:
+            path: "/bin/sh"
+            args: 
+              - '-exc'
+              - 'cp -r repository/example-container/* result/'
+
+      - put: 'image'
+        params:
+          load_base: base_image
+          skip_download: true
+          build: "result"
