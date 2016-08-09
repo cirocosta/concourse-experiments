@@ -1,0 +1,38 @@
+---
+jobs:
+  - name: container1
+    plan:
+      - task: 'just-ok'
+        config:
+          platform: linux
+          image_resource:
+            type: fail
+            source:
+              repository: 'busybox'
+          run:
+            path: false
+
+
+  - name: container2
+    plan:
+      - task: 'just-ok'
+        config:
+          platform: linux
+          image_resource:
+            type: fail
+            source:
+              repository: 'busybox'
+          run:
+            path: false
+
+  - name: container3
+    plan:
+      - task: 'just-ok'
+        config:
+          platform: linux
+          image_resource:
+            type: fail
+            source:
+              repository: 'busybox'
+          run:
+            path: false

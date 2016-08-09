@@ -1,0 +1,74 @@
+#!/bin/bash
+
+
+set -o errexit
+set -o pipefail
+
+
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+
+readonly IP=`ifconfig $(netstat -nr | grep -e default -e "^0\.0\.0\.0" | head -1 | awk '{print $NF}') | grep -e "inet " | sed -e 's/.*inet //' -e 's/ .*//' -e 's/.*\://'`
+readonly PORT=8081
+readonly URL="http://$IP:$PORT"
+
+
+main () {
+  [[ -z $1 ]] && { show_usage; exit 1; }
+
+  set -u
+
+  local pipeline_path=$1
+  local pipeline_name=$(basename $pipeline_path | cut -d'.' -f 1)
+
+  login
+  send_pipeline $pipeline_name $pipelinne_path
+  unpause_pipeline $pipeline_name
+
+  echo "Done!"
+}
+
+
+login () {
+  echo "Logging into $URL"
+
+  fly \
+    -t wedeploy login \
+    -c $URL \
+    -u myuser \
+    -p mypass 
+}
+
+
+send_pipeline () {
+  local pipeline_name=$1
+  local pipeline_path=$2
+
+  echo "Sending Pipeline $pipeline_name"
+
+  fly \
+    -t wedeploy set-pipeline \
+    -c $pipeline_path \
+    -p $pipeline_name -n
+}
+
+
+unpausing_pipeline () {
+  local pipeline_name=$1
+
+  echo "Unpausing Pipeline $pipeline_name"
+
+  fly \
+    -t wedeploy unpause-pipeline \
+    -p $pipeline_name 
+}
+
+
+show_usage () {
+  cat<<USAGE
+  Usage: 
+    ./run <pipeline-name>
+USAGE
+}
+
+main "$@"
