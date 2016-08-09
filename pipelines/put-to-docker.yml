@@ -5,27 +5,32 @@ resources:
     source:
       uri: 'https://github.com/cirocosta/concourse-experiments.git'
 
+  - name: 'base-image'
+    type: 'docker-image' 
+    source:
+      repository: 'frolvlad/alpine-bash'
+
   - name: 'image'
     type: 'docker-image' 
     source:
-      repository: '192.168.109.54:5000/test/static'
-      insecure_registries: ['192.168.109.54:5000']
+      repository: '192.168.108.86:5000/test/static'
+      insecure_registries: ['192.168.108.86:5000']
 
 jobs:
   - name: "build"
     plan:
+      - get: 'base-image'
+        params:
+          save: true
+          rootfs: true
+
       - get: 'repository'
         trigger: true
 
       - task: 'hue'
         config: 
           platform: linux
-          image_resource:
-            type: docker-image
-            source: 
-              repository: 'alpine-bash'
-              insecure_registries: ['192.168.109.54:5000']
-              save: true
+          image: base-image
           inputs:
             - name: 'repository'
           outputs:
@@ -37,7 +42,8 @@ jobs:
               - 'cp -r repository/example-container/* result/'
 
       - put: 'image'
-        params:
-          load_base: base_image
+        get_params:
           skip_download: true
+        params:
+          load_base: "base-image"
           build: "result"

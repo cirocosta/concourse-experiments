@@ -68,6 +68,8 @@ show_usage () {
   cat<<USAGE
   Usage: 
     ./run <pipeline-name>
+
+  IP: $IP
 USAGE
 }
 
