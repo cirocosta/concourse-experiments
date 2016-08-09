@@ -28,9 +28,9 @@ jobs:
         trigger: true
 
       - task: 'hue'
+        image: base-image
         config: 
           platform: linux
-          image: base-image
           inputs:
             - name: 'repository'
           outputs:
