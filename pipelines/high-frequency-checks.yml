@@ -1,0 +1,35 @@
+---
+resources:
+  - name: 'repository'
+    type: 'git' 
+    check_every: '5s'
+    source:
+      uri: 'https://github.com/cirocosta/concourse-experiments.git'
+
+  - name: 'base-image'
+    type: 'docker-image' 
+    source:
+      repository: 'busybox'
+
+jobs:
+  - name: "build"
+    plan:
+
+      - get: 'base-image'
+        params:
+          save: true
+
+      - get: 'repository'
+        trigger: true
+        params:
+          depth: 1
+
+      - task: 'defacto-task'
+        image: base-image
+        config: 
+          platform: linux
+          inputs:
+            - name: 'repository'
+          run:
+            path: "date"
+

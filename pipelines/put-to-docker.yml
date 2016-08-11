@@ -22,7 +22,6 @@ jobs:
       - get: 'base-image'
         params:
           save: true
-          rootfs: true
 
       - get: 'repository'
         trigger: true
