@@ -1,3 +1,3 @@
 FROM frolvlad/alpine-bash
 
-RUN echo "hello!"
+RUN echo "helloworld!"
